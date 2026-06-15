@@ -9,10 +9,12 @@ from app.services.yamnet_service import yamnet_service
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Pre-load YAMNet at startup so the first /sound/analyze request is not slow.
-    # Model download (~17 MB) is cached locally by TF Hub after the first run.
-    loop = asyncio.get_event_loop()
-    await loop.run_in_executor(None, yamnet_service.load)
+    # Skip YAMNet on memory-constrained environments (e.g. Render free tier).
+    # Set LOAD_YAMNET=true to enable it.
+    import os
+    if os.getenv("LOAD_YAMNET", "false").lower() == "true":
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(None, yamnet_service.load)
     yield
 
 
