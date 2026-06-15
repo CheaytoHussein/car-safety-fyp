@@ -4,10 +4,7 @@ import io
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 
-import librosa
 import numpy as np
-import tensorflow as tf
-import tensorflow_hub as hub
 
 YAMNET_URL = "https://tfhub.dev/google/yamnet/1"
 
@@ -56,6 +53,9 @@ class YAMNetService:
     def load(self) -> None:
         if self._model is not None:
             return
+        import tensorflow as tf  # noqa: PLC0415
+        import tensorflow_hub as hub  # noqa: PLC0415
+        self._tf = tf
         self._model = hub.load(YAMNET_URL)
         class_map_path = self._model.class_map_path().numpy()
         with tf.io.gfile.GFile(class_map_path) as f:
@@ -72,6 +72,7 @@ class YAMNetService:
     def _run_inference(self, audio_bytes: bytes) -> SoundAnalysisResult:
         self.load()
 
+        import librosa  # noqa: PLC0415
         # librosa resamples to 16 kHz mono — what YAMNet requires
         waveform, _ = librosa.load(io.BytesIO(audio_bytes), sr=16000, mono=True)
         duration = len(waveform) / 16000.0
