@@ -1,0 +1,39 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# Environment — contains DB credentials, never commit
+.env
+
+# TensorFlow Hub model cache
+tfhub_modules/
+*.tfhub_cache/
+
+# PlatformIO build output
+firmware/.pio/
+firmware/.vscode/
+
+# Audio test files
+*.wav
+
+# Loose experiment/scratch scripts
+bytes.txt
+clean.py
+convert.py
+del.py
+esp.py
+read_serial.py
+0_initial_sensor_readings.txt
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.code-workspace
