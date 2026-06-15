@@ -24,13 +24,20 @@ class CoLevelEnum(str, Enum):
     HIGH = "HIGH"
 
 
+class SoundClassEnum(str, Enum):
+    BABY_CRY = "BABY_CRY"
+    CAT_MEOW = "CAT_MEOW"
+    DOG_BARK = "DOG_BARK"
+
+
 class SensorPayload(BaseModel):
-    device_id: str = Field(..., description="Unique ESP32 identifier (e.g. MAC address)")
+    device_id: str = Field(..., description="Serial number hardcoded in firmware")
     temperature: float
     humidity: float
     smokeLevel: SmokeLevelEnum
     airQuality: AirQualityEnum
     coLevel: CoLevelEnum
+    noise_detected: bool = False
     latitude: float
     longitude: float
 
@@ -43,29 +50,26 @@ class SensorReadingResponse(BaseModel):
     smoke_level: str | None
     air_quality: str | None
     co_level: str | None
+    noise_detected: bool
     latitude: float | None
     longitude: float | None
     recorded_at: datetime
-    alerts_triggered: int
 
     model_config = {"from_attributes": True}
 
 
-class DetectionResult(BaseModel):
-    detected: bool
-    confidence: float
+class SoundEventPayload(BaseModel):
+    device_id: str = Field(..., description="Serial number hardcoded in firmware")
+    sound_class: SoundClassEnum
+    confidence: float = Field(..., ge=0.0, le=1.0)
 
 
-class SoundAnalysisResponse(BaseModel):
+class SoundEventResponse(BaseModel):
     id: uuid.UUID
     device_id: uuid.UUID
-    baby: DetectionResult
-    dog: DetectionResult
-    cat: DetectionResult
-    top_labels: list[dict]
-    audio_duration_s: float | None
+    sound_class: str
+    confidence: float | None
     recorded_at: datetime
-    alerts_triggered: int
 
     model_config = {"from_attributes": True}
 
